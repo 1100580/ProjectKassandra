@@ -1,7 +1,7 @@
 #include <iostream>
-#include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/PointField.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/conversions.h>
+#include <pcl/pcl_base.h>
 #include <boost/make_shared.hpp>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/point_types.h>
@@ -105,18 +105,18 @@ void passthrough(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl:
 //reduz o numero de pontos da point cloud encontrando pontos que representem os pontos à sua volta
 void voxel(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_voxel){
 
-	sensor_msgs::PointCloud2 cloud2;
+	pcl::PCLPointCloud2 cloud2;
 
-	pcl::toROSMsg(*cloud, cloud2);
-	sensor_msgs::PointCloud2ConstPtr cloud2Ptr (new sensor_msgs::PointCloud2(cloud2));
+	pcl::toPCLPointCloud2(*cloud, cloud2);
+	pcl::PCLPointCloud2ConstPtr cloud2Ptr (new pcl::PCLPointCloud2(cloud2));
 
-	pcl::VoxelGrid<sensor_msgs::PointCloud2> sor;
-	sor.setInputCloud (cloud2Ptr);
+	pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
+	sor.setInputCloud(cloud2Ptr);
 	sor.setLeafSize (0.005f, 0.005f, 0.005f);
 
-	sensor_msgs::PointCloud2::Ptr cloud_2 (new sensor_msgs::PointCloud2 ());
+	pcl::PCLPointCloud2Ptr cloud_2 (new pcl::PCLPointCloud2 ());
 	sor.filter (*cloud_2);
-	pcl::fromROSMsg (*cloud_2, *cloud_voxel);
+	pcl::fromPCLPointCloud2(*cloud_2, *cloud_voxel);
 }
 
 //Remove os planos da point cloud e guarda todos os clusters resultantes
